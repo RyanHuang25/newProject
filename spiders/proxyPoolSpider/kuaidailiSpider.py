@@ -5,8 +5,8 @@
 # @Software : PyCharm
 # @Email : huangrenwu@steponeai.com
 
-import requests,sys
-sys.path.append('../../')
+import requests,sys,os
+sys.path.append('../')
 from lxml import etree
 from PipeLine import PipeLine
 from tools.Thread_Pool import thread_pool
