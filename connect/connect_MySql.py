@@ -86,11 +86,17 @@ class ConnectMySql:
         item_key = self.get_columns(table_name,drop_column)
         item = self.item_insert_value(item_key,item)
         values = ''
-        for value in item.values():
-            if value == "":
-                values += f'NULL,'
+        for key, value in item.items():
+            if key in not_empty:
+                if value == "":
+                    values += f'"",'
+                else:
+                    values += f'"{value}",'
             else:
-                values += f'"{value}",'
+                if value == "":
+                    values += f'NULL,'
+                else:
+                    values += f'"{value}",'
         sql = f'insert into {table_name} ({",".join(item.keys())}) values ({values[:-1]})'
         print_green(sql)
         conn,cursor = self.connect_conn()
@@ -115,7 +121,7 @@ class ConnectMySql:
             sql = f'select * from {table_name} where '
             for key,value in where.items():
                 sql += f'{key}="{value}" and '
-        sql = sql[:-5] + f' limit {limit_count}'
+            sql = sql[:-5] + f' limit {limit_count}'
         print_bule(sql)
         conn, cursor = self.connect_conn()
         cursor.execute(sql)
