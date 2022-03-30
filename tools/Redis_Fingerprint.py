@@ -23,7 +23,7 @@ class get_md5:
         '''
         url = ''
         for value in item.items():
-            url += value
+            url += str(value)
         hl = hashlib.md5()
         hl.update(url.encode(encoding='utf8'))
         return hl.hexdigest()

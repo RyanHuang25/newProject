@@ -16,7 +16,7 @@ class ConnectMySql:
     mysql连接池、自动入库
     '''
 
-    def __init__(self,sql_name,database_name):
+    def __init__(self,database_name):
         self.pool = PersistentDB(
             creator=pymysql,  # 使用链接数据库的模块
             maxusage=None,  # 一个链接最多被重复使用的次数，None表示无限制
@@ -76,7 +76,7 @@ class ConnectMySql:
                 pass
         return item_key
 
-    def insert_data(self,item,table_name,drop_column = ['id','updated','isonline','entid']):
+    def insert_data(self,item,table_name,drop_column = ['id','updated','isonline','entid'],not_empty=[]):
         '''
         写入mysql数据库
         :param item: 数据内容，字典类型
