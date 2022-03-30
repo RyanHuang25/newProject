@@ -98,11 +98,11 @@ class ConnectMySql:
                 else:
                     values += f'"{value}",'
         sql = f'insert into {table_name} ({",".join(item.keys())}) values ({values[:-1]})'
-        print_green(sql)
         conn,cursor = self.connect_conn()
         try:
             cursor.execute(sql)
             conn.commit()
+            print_green(sql)
         except Exception as e:
             print_red(e)
         self.close_conn(conn, cursor)

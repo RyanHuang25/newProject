@@ -32,6 +32,6 @@ def run():
         mysql_con.insert_data(item,table_name='yellowwebsite')
 
 
-for i in range(10):
+for i in range(100):
     threading.Thread(target=run).start()
 
