@@ -76,15 +76,15 @@ class ConnectMySql:
                 pass
         return item_key
 
-    def insert_data(self,item,table_name,drop_column = ['id','updated','isonline','entid'],not_empty=[]):
+    def insert_data(self, item, table_name, drop_column=['id', 'updated', 'isonline', 'entid', 'created'],not_empty=[]):
         '''
         写入mysql数据库
         :param item: 数据内容，字典类型
         :param table_name: 表明
         :return:
         '''
-        item_key = self.get_columns(table_name,drop_column)
-        item = self.item_insert_value(item_key,item)
+        item_key = self.get_columns(table_name, drop_column)
+        item = self.item_insert_value(item_key, item)
         values = ''
         for key, value in item.items():
             if key in not_empty:
@@ -98,13 +98,38 @@ class ConnectMySql:
                 else:
                     values += f'"{value}",'
         sql = f'insert into {table_name} ({",".join(item.keys())}) values ({values[:-1]})'
-        conn,cursor = self.connect_conn()
+        conn, cursor = self.connect_conn()
         try:
             cursor.execute(sql)
             conn.commit()
             print_green(sql)
         except Exception as e:
             print_red(e)
+        self.close_conn(conn, cursor)
+
+    def insert_many(self, item_list, table_name, drop_column=['id', 'updated', 'isonline', 'entid', 'created']):
+        '''
+        批量入库，操作和自动入库类似
+        :param item_list: 数据值列表
+        '''
+        item_key = self.get_columns(table_name, drop_column)
+        conn, cursor = self.connect_conn()
+        sss = ''
+        for i in range(len(item_key)):
+            sss += '%s,'
+        sql = 'insert ignore into {} ('.format(table_name) + ','.join(item_key) + ')' + ' values ({})'.format(sss[:-1])
+
+        value_list = []
+        for item in item_list:
+            for key in item_key.keys():
+                try:
+                    item_key[key] = item[key]
+                except:
+                    pass
+            data = '(' + ','.join(['%r' % str(i) for i in item_key.values()]) + ')'
+            value_list.append(eval(data))
+        cursor.executemany(sql, value_list)
+        conn.commit()
         self.close_conn(conn, cursor)
 
     def select_data(self,table_name,where={},limit_count=100):
